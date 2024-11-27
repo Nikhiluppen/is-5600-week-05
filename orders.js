@@ -35,7 +35,7 @@ const Product = db.model('Product', {
 /**
  * List products
  * @param {*} options 
-@@ -12,38 +41,62 @@ async function list(options = {}) {
+@@ -12,38 +41,61 @@ async function list(options = {}) {
 
   const { offset = 0, limit = 25, tag } = options;
 
@@ -49,18 +49,19 @@ const Product = db.model('Product', {
       $elemMatch: {
         title: tag
       }
-
-      return product.tags.find(({ title }) => title == tag)
-    })
-    .slice(offset, offset + limit) // Slice the products
     }
   } : {}
+
   const products = await Product.find(query)
     .sort({ _id: 1 })
     .skip(offset)
     .limit(limit)
 
   return products
+
+      return product.tags.find(({ title }) => title == tag)
+    })
+    .slice(offset, offset + limit) // Slice the products
 }
 
 /**
@@ -83,29 +84,26 @@ async function get(_id) {
   }
 async function create (fields) {
   const product = await new Product(fields).save()
+
   return product
 }
 
-  // If no product is found, return null
-  return null;
 async function edit (_id, change) {
   const product = await get(_id)
 
-  // todo can we use spread operators here?
   Object.keys(change).forEach(function (key) {
     product[key] = change[key]
   })
+
+  // Object.assign(product, { ...change } );
 
   await product.save()
 
   return product
 }
 
-/**
- * Delete a product
- * @param {String} _id
- * @returns {Promise<Object>}
- */
+  // If no product is found, return null
+  return null;
 async function destroy (_id) {
   return await Product.deleteOne({_id})
 }
@@ -116,5 +114,5 @@ module.exports = {
   get,
   create,
   edit,
-  destroy,
+  destroy
 }
